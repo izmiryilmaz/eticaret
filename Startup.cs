@@ -6,14 +6,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 namespace eticaret
 {
     public class Startup
     {
-       //https://go.microsoft.com/fwlink/?LinkID=398940
-            public void ConfigureServices(IServiceCollection services)
+        public IConfiguration Configuration { get; set; }
+        public Startup(IConfiguration configuration) 
+        {
+         this.Configuration = configuration;
+        }
+       
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
         }
@@ -24,15 +30,20 @@ namespace eticaret
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/", async context =>
+            app.UseRouting();
+                app.UseStaticFiles(new StaticFileOptions
                 {
-                    await context.Response.WriteAsync("Hello World!");
+                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "node_modules")),
+                    RequestPath = "/content"
                 });
-            });
+
+               app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllerRoute(name: "default", pattern:
+                        "{Controller=Home}/{Action=Index}");
+                }); 
+            
         }
     }
 }
