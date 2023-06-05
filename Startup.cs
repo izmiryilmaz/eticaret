@@ -19,6 +19,7 @@ namespace eticaret
          this.Configuration = configuration;
         }
        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
